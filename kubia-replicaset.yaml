@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: kub-js-v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kub-js-v1
+  template:
+    metadata:
+      labels:
+        app: kub-js-v1
+    spec:
+      containers:
+      - name: kub-js-v1
+        image: petrovkazanksvu/kub_js:v1
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: kub-js-v2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kub-js-v2
+  template:
+    metadata:
+      labels:
+        app: kub-js-v2
+    spec:
+      containers:
+      - name: kub-js-v2
+        image: petrovkazanksvu/kub_js:v2

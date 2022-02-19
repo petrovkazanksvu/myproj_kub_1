@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress-nginx
+spec:
+  rules:
+  - host: v1.example.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: kub-js-v1-nodeport
+            port:
+              number: 80
+  - host: v2.example.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: kub-js-v2-nodeport
+            port:
+              number: 80
