@@ -3,6 +3,13 @@ kind: Ingress
 metadata:
   name: my-ingress-nginx
 spec:
+  tls:
+    - secretName: test-tls-1
+      hosts:
+        - v1.example.com
+    - secretName: test-tls-2
+      hosts:
+        - v2.example.com
   rules:
   - host: v1.example.com
     http:
