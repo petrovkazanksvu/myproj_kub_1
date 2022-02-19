@@ -3,11 +3,11 @@ kind: Service
 metadata:
   name: kub-js-v1-nodeport
 spec:
-  type: NodePort
+#  type: NodePort
   ports:
   - port: 80
     targetPort: 8080
-    nodePort: 30123
+#    nodePort: 30123
   selector:
     app: kub-js-v1
 ---
@@ -16,10 +16,10 @@ kind: Service
 metadata:
   name: kub-js-v2-nodeport
 spec:
-  type: NodePort
+#  type: NodePort
   ports:
   - port: 80
     targetPort: 8080
-    nodePort: 30124
+#    nodePort: 30124
   selector:
     app: kub-js-v2
