@@ -30,6 +30,35 @@ spec:
       labels:
         app: kub-js-v2
     spec:
+      initContainers:
+        - name: busybox-init
+          image: busybox:1.32.0
+          command: ['sh', '-c', 'touch /empty/init-file']
+          volumeMounts:
+            - name: empty-volume
+              mountPath: /empty
       containers:
       - name: kub-js-v2
         image: petrovkazanksvu/kub_js:v2
+        volumeMounts:
+          - name: empty-volume
+            mountPath: /empty
+          - name: logs-volume
+            mountPath: /host_logs
+            readOnly: true
+      - name: centos
+        image: centos:centos8
+        command: ['bash']
+        args: ['-c','sleep 50000']
+        volumeMounts:
+          - name: empty-volume
+            mountPath: /empty
+      volumes:
+        - name: empty-volume
+          emptyDir:
+            medium: "Memory"
+        - name: logs-volume
+          hostPath:
+            path: /var/log
+            type: Directory
+      
