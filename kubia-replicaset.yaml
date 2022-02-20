@@ -38,6 +38,43 @@ spec:
             - name: empty-volume
               mountPath: /empty
       containers:
+      - name: openresty
+        image: openresty/openresty:centos-rpm
+        env:
+          - name: NGINX_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: ENV_USER_111
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: user
+        envFrom:
+          - configMapRef:
+              name: env-config
+          - secretRef:
+              name: my-secret
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: "300Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"        
+        ports:
+        - containerPort: 80
+          name: http-openresty
+          protocol: TCP
+        volumeMounts:
+          - name: index-html
+            mountPath: /usr/local/openresty/nginx/html/
+          - mountPath: "/etc/secrets"
+            name: secret-volume
+            readOnly: true
+          - mountPath: "/etc/pod-info"
+            name: pod-info
+            readOnly: true
       - name: kub-js-v2
         image: petrovkazanksvu/kub_js:v2
         volumeMounts:
@@ -46,6 +83,10 @@ spec:
           - name: logs-volume
             mountPath: /host_logs
             readOnly: true
+        ports:
+        - containerPort: 8080
+          name: http-nodejs
+          protocol: TCP
       - name: centos
         image: centos:centos8
         command: ['bash']
@@ -61,4 +102,25 @@ spec:
           hostPath:
             path: /var/log
             type: Directory
-      
+        - name: index-html
+          configMap:
+            name: index-html
+        - name: secret-volume
+          secret:
+            secretName: user-password-secret
+        - name: pod-info
+          downwardAPI:
+            items:
+              - path: limit-cpu-millicores
+                resourceFieldRef:
+                  containerName: openresty
+                  resource: limits.cpu
+                  divisor: 1m
+              - path: limit-memory-kibibytes
+                resourceFieldRef:
+                  containerName: openresty
+                  resource: limits.memory
+                  divisor: 1Ki
+              - path: labels
+                fieldRef:
+                  fieldPath: metadata.labels     
