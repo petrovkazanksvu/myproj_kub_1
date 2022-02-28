@@ -3,7 +3,7 @@ kind: ReplicaSet
 metadata:
   name: kub-js-v1
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: kub-js-v1
@@ -75,14 +75,14 @@ spec:
           - mountPath: "/etc/pod-info"
             name: pod-info
             readOnly: true
-      - name: kub-js-v2
-        image: petrovkazanksvu/kub_js:v2
-        volumeMounts:
           - name: empty-volume
             mountPath: /empty
           - name: logs-volume
             mountPath: /host_logs
             readOnly: true
+      - name: kub-js-v2
+        image: petrovkazanksvu/kub_js:v2
+
         ports:
         - containerPort: 8080
           name: http-nodejs
@@ -94,7 +94,12 @@ spec:
         volumeMounts:
           - name: empty-volume
             mountPath: /empty
+          - mountPath: /mnt/local
+            name: claim-volume
+          - mountPath: /mnt/nfs
+            name: claim-volume-nfs
       volumes:
+
         - name: empty-volume
           emptyDir:
             medium: "Memory"
@@ -108,6 +113,9 @@ spec:
         - name: secret-volume
           secret:
             secretName: user-password-secret
+        - name: claim-volume
+          persistentVolumeClaim:
+            claimName: claim-local-pvc
         - name: pod-info
           downwardAPI:
             items:
@@ -123,4 +131,7 @@ spec:
                   divisor: 1Ki
               - path: labels
                 fieldRef:
-                  fieldPath: metadata.labels     
+                  fieldPath: metadata.labels
+        - name: claim-volume-nfs
+          persistentVolumeClaim:
+            claimName: claim-nfs-pv

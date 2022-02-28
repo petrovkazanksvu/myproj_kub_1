@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: test-local
+spec:
+  storageClassName: ""
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 3Mi
+  local:
+    path: /opt/local-pv
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          # - node2.kryukov.local
+          - kind-control-plane
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-local-pvc
+spec:
+  storageClassName: ""
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
+  volumeName: test-local

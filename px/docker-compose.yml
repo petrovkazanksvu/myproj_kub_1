@@ -1,0 +1,33 @@
+version: "2.1"
+services:
+  # https://hub.docker.com/r/itsthenetwork/nfs-server-alpine
+  nfs:
+    image: itsthenetwork/nfs-server-alpine:12
+    container_name: nfs
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - SHARED_DIRECTORY=/data
+    volumes:
+      - /home/geo/musor/k8s/kaction/code/kubernetes-in-action-master/myproject/px/data/nfs-storage:/data
+    ports:
+      - 2049:2049
+    networks: 
+      kind:
+        ipv4_address: 172.18.0.10
+        aliases:
+          - frontnginx.local.net
+networks: 
+  kind:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.18.0.0/24
+
+docker run -itd --privileged \
+  --restart unless-stopped \
+  -e SHARED_DIRECTORY=/data \
+  -v /home/geo/musor/k8s/kaction/code/kubernetes-in-action-master/myproject/px/data/nfs-storage:/data \
+  -p 2049:2049 \
+  --network kind \
+  itsthenetwork/nfs-server-alpine:12
